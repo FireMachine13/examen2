@@ -1,7 +1,7 @@
 import express from 'express';
-import { default as User } from '../db/models/users';  
-import { default as Product } from '../db/models/products';  
-import { default as Purchase } from '../db/models/purchases'; 
+import { default as User } from '../db/models/user';  
+import { default as Product } from '../db/models/marca';  
+import { default as Purchase } from '../db/models/juguete'; 
 
 
 const router = express.Router();
@@ -173,31 +173,32 @@ router.put("/products/:id", async (req, res) => {
   const productId = req.params.id;
   const { name, description, price, discount, stock, image } = req.body;
 
+  console.log("ID recibido:", productId); // Para verificar el ID
+  console.log("Datos recibidos:", req.body); // Para verificar los datos
+
   try {
-    // Buscar el producto por ID
     const product = await Product.findByPk(productId);
 
     if (!product) {
       return res.status(404).json({ message: "Producto no encontrado" });
     }
 
-    // Actualizar el producto usando el método update de Sequelize
     const updatedProduct = await product.update({
-      name: name,
-      description: description,
-      price: price,
-      discount: discount,
-      stock: stock,
-      image: image,
+      name,
+      description,
+      price,
+      discount,
+      stock,
+      image,
     });
 
-    // Devolver el producto actualizado
     res.json(updatedProduct);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error al actualizar el producto" });
   }
 });
+
 
 router.put('/purchases/:id', async (req, res) => {
   const { id } = req.params;

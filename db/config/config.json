@@ -1,6 +1,6 @@
 {
     "development": {
-      "database": "examenu2",
+      "database": "FunToys",
       "username": "root",
       "password": "123456789",
       "host": "127.0.0.1",

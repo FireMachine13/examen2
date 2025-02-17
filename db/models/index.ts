@@ -1,13 +1,36 @@
-import sequelize from '../database';
-import Product from './products';
-import Purchase from './purchases';
-import User from './users';
+'use strict';
 
-// Purchase Model
-Purchase.belongsTo(Product, { foreignKey: 'productId' });
+const fs = require('fs');
+const path = require('path');
+const { Sequelize } = require('sequelize');
+const config = require('../config/config.json');
 
-// Product Model
-Product.hasMany(Purchase, { foreignKey: 'productId' });
+const basename = path.basename(__filename);
+const env = process.env.NODE_ENV || 'development';
+const dbConfig = config[env];
+
+const sequelize = new Sequelize(dbConfig.database, dbConfig.username, dbConfig.password, {
+  host: dbConfig.host,
+  dialect: dbConfig.dialect,
+  logging: false, // Desactiva logs de SQL
+});
+
+const db = {};
+
+// Cargar modelos dinámicamente
+fs.readdirSync(__dirname)
+  .filter((file) => file !== basename && file.endsWith('.js'))
+  .forEach((file) => {
+    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
+    db[model.name] = model;
+  });
+
+// Definir asociaciones
+Object.keys(db).forEach((modelName) => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
+});
 
 
-export { sequelize, Product, Purchase, User };
+module.exports = db;
